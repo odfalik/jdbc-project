@@ -15,12 +15,12 @@ CREATE SCHEMA IF NOT EXISTS `games` DEFAULT CHARACTER SET utf8 ;
 USE `games` ;
 
 -- -----------------------------------------------------
--- Table `games`.`Player`
+-- Table `games`.`player`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `games`.`Player` (
+CREATE TABLE IF NOT EXISTS `games`.`player` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
-  `firstName` VARCHAR(45) NULL,
-  `lastName` VARCHAR(45) NULL,
+  `first_name` VARCHAR(45) NULL,
+  `last_name` VARCHAR(45) NULL,
   `join_date` DATE NULL,
   `email` VARCHAR(45) NULL,
   PRIMARY KEY (`id`))
@@ -28,83 +28,83 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `games`.`Game`
+-- Table `games`.`game`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `games`.`Game` (
+CREATE TABLE IF NOT EXISTS `games`.`game` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(45) NULL,
-  `description` VARCHAR(45) NULL,
-  `releaseDate` DATE NULL,
+  `description` VARCHAR(512) NULL,
+  `release_date` DATE NULL,
   `version` VARCHAR(45) NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `games`.`GamesOwned`
+-- Table `games`.`gamesOwned`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `games`.`GamesOwned` (
+CREATE TABLE IF NOT EXISTS `games`.`gamesOwned` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
-  `playerID_go` BIGINT NOT NULL,
-  `gameID_go` BIGINT NOT NULL,
-  `purchaseDate` DATE NULL,
-  `purchasePrice` DECIMAL NULL,
+  `player_id_go` BIGINT NOT NULL,
+  `game_id_go` BIGINT NOT NULL,
+  `purchase_date` DATE NULL,
+  `purchase_price` DECIMAL NULL,
   PRIMARY KEY (`id`),
-  INDEX `playerID_idx` (`playerID_go` ASC) VISIBLE,
-  INDEX `gameID_idx` (`gameID_go` ASC) VISIBLE,
-  CONSTRAINT `playerID_go`
-    FOREIGN KEY (`playerID_go`)
-    REFERENCES `games`.`Player` (`id`)
+  INDEX `player_id_idx` (`player_id_go` ASC) VISIBLE,
+  INDEX `game_id_idx` (`game_id_go` ASC) VISIBLE,
+  CONSTRAINT `player_id_go`
+    FOREIGN KEY (`player_id_go`)
+    REFERENCES `games`.`player` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `gameID_go`
-    FOREIGN KEY (`gameID_go`)
-    REFERENCES `games`.`Game` (`id`)
+  CONSTRAINT `game_id_go`
+    FOREIGN KEY (`game_id_go`)
+    REFERENCES `games`.`game` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `games`.`GamesPlayed`
+-- Table `games`.`gamesPlayed`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `games`.`GamesPlayed` (
+CREATE TABLE IF NOT EXISTS `games`.`gamesPlayed` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
-  `playerID_gp` BIGINT NOT NULL,
-  `gameID_gp` BIGINT NOT NULL,
-  `timeFinished` DATE NULL,
+  `player_id_gp` BIGINT NOT NULL,
+  `game_id_gp` BIGINT NOT NULL,
+  `time_finished` DATE NULL,
   `score` INT NULL,
   PRIMARY KEY (`id`),
-  INDEX `playerID_idx` (`playerID_gp` ASC) VISIBLE,
-  INDEX `gameID_idx` (`gameID_gp` ASC) VISIBLE,
-  CONSTRAINT `playerID_gp`
-    FOREIGN KEY (`playerID_gp`)
-    REFERENCES `games`.`Player` (`id`)
+  INDEX `player_id_idx` (`player_id_gp` ASC) VISIBLE,
+  INDEX `game_id_idx` (`game_id_gp` ASC) VISIBLE,
+  CONSTRAINT `player_id_gp`
+    FOREIGN KEY (`player_id_gp`)
+    REFERENCES `games`.`player` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `gameID_gp`
-    FOREIGN KEY (`gameID_gp`)
-    REFERENCES `games`.`Game` (`id`)
+  CONSTRAINT `game_id_gp`
+    FOREIGN KEY (`game_id_gp`)
+    REFERENCES `games`.`game` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `games`.`CreditCard`
+-- Table `games`.`creditCard`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `games`.`CreditCard` (
+CREATE TABLE IF NOT EXISTS `games`.`creditcard` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
-  `playerID_cc` BIGINT NOT NULL,
-  `ccName` VARCHAR(45) NULL,
-  `ccNumber` VARCHAR(45) NULL,
-  `securityCode` INT NULL,
-  `expDate` VARCHAR(45) NULL,
+  `player_id_cc` BIGINT NOT NULL,
+  `cc_name` VARCHAR(45) NULL,
+  `cc_number` VARCHAR(45) NULL,
+  `security_code` INT NULL,
+  `exp_date` VARCHAR(45) NULL,
   PRIMARY KEY (`id`),
-  INDEX `playerID_idx` (`playerID_cc` ASC) VISIBLE,
-  CONSTRAINT `playerID_cc`
-    FOREIGN KEY (`playerID_cc`)
-    REFERENCES `games`.`Player` (`id`)
+  INDEX `player_id_idx` (`player_id_cc` ASC) VISIBLE,
+  CONSTRAINT `player_id_cc`
+    FOREIGN KEY (`player_id_cc`)
+    REFERENCES `games`.`player` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
