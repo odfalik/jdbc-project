@@ -11,7 +11,10 @@
 package cs4347.jdbcGame.dao.impl;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import cs4347.jdbcGame.dao.GamesOwnedDAO;
@@ -20,11 +23,36 @@ import cs4347.jdbcGame.util.DAOException;
 
 public class GamesOwnedDAOImpl implements GamesOwnedDAO
 {
+	private static final String insertSQL = "INSERT INTO gamesOwned (player_id_go, game_id_go, purchase_date, purchase_price) VALUES (?, ?, ?, ?);";
 
     @Override
     public GamesOwned create(Connection connection, GamesOwned gamesOwned) throws SQLException, DAOException
     {
-        return null;
+        if (gamesOwned.getId() != null) {
+        	throw new DAOException("Trying to insert GamesOwned with NON-NULL ID");
+        }
+        
+        PreparedStatement ps = null;
+        try {
+        	ps = connection.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
+        	ps.setLong(1, gamesOwned.getPlayerID());
+        	ps.setLong(2, gamesOwned.getGameID());
+        	ps.setDate(3, new java.sql.Date(gamesOwned.getPurchaseDate().getTime()));
+        	ps.setFloat(4, gamesOwned.getPurchasePrice());
+        	ps.executeUpdate();
+        	
+        	//copy assigned ID
+        	ResultSet keyRS = ps.getGeneratedKeys();
+            keyRS.next();
+            int lastKey = keyRS.getInt(1);
+            gamesOwned.setId((long) lastKey);
+            return gamesOwned;
+        }
+        finally {
+            if (ps != null && !ps.isClosed()) {
+                ps.close();
+            }
+        }
     }
 
     @Override
