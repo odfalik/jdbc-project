@@ -15,10 +15,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import cs4347.jdbcGame.dao.PlayerDAO;
+import cs4347.jdbcGame.entity.CreditCard;
+import cs4347.jdbcGame.entity.Game;
 import cs4347.jdbcGame.entity.Player;
 import cs4347.jdbcGame.util.DAOException;
 
@@ -57,10 +60,31 @@ public class PlayerDAOImpl implements PlayerDAO
         }
     }
 
+    final static String selectSQL = "select p.id as pid, p.first_name, p.last_name, p.join_date, p.email, "
+					    		  + "c.id as cid, c.cc_name, c.cc_number, c.security_code, c.exp_date "
+					    		  + "from player as p inner join creditcard as c where player_id_cc = p.id && p.id = ?";
+    
     @Override
     public Player retrieve(Connection connection, Long playerID) throws SQLException, DAOException
     {
-        return null;
+        if (playerID == null) {
+            throw new DAOException("Trying to retrieve Player with NULL ID");
+        }
+
+        PreparedStatement ps = null;
+        try {
+            ps = connection.prepareStatement(selectSQL);
+            ps.setLong(1, playerID);
+            ResultSet rs = ps.executeQuery();
+
+            Player player = extractFromRSWithCC(rs);
+            return player;
+        }
+        finally {
+            if (ps != null && !ps.isClosed()) {
+                ps.close();
+            }
+        }
     }
 
     @Override
@@ -75,10 +99,27 @@ public class PlayerDAOImpl implements PlayerDAO
         return 0;
     }
 
+    
+    final static String countSQL = "select count(*) from player";
+    
     @Override
     public int count(Connection connection) throws SQLException, DAOException
     {
-        return 0;
+        PreparedStatement ps = null;
+        try {
+            ps = connection.prepareStatement(countSQL);
+            ResultSet rs = ps.executeQuery();
+            if (!rs.next()) {
+                throw new DAOException("No Count Returned");
+            }
+            int count = rs.getInt(1);
+            return count;
+        }
+        finally {
+            if (ps != null && !ps.isClosed()) {
+                ps.close();
+            }
+        }
     }
 
     @Override
@@ -86,6 +127,30 @@ public class PlayerDAOImpl implements PlayerDAO
             throws SQLException, DAOException
     {
         return null;
+    }
+    
+    private Player extractFromRSWithCC(ResultSet rs) throws SQLException
+    {
+        Player player = new Player();
+        player.setId(rs.getLong("pid"));
+        player.setFirstName(rs.getString("first_name"));
+        player.setLastName(rs.getString("last_name"));
+        player.setJoinDate(rs.getDate("join_date"));
+        player.setEmail(rs.getString("email"));
+        
+        List<CreditCard> creditCards = new ArrayList<CreditCard>();
+        do {
+        	creditCards.add(new CreditCard(
+        		rs.getLong("pid"),
+        		rs.getString("cc_name"),
+        		rs.getString("cc_number"),
+        		rs.getInt("security_code"),
+        		rs.getString("exp_date")
+			));
+        } while (rs.next());
+        player.setCreditCards(creditCards);
+        
+        return player;
     }
 
 }

@@ -18,6 +18,18 @@ public class CreditCard
     private String ccNumber;
     private int securityCode;
     private String expDate;
+    
+    public CreditCard() {
+    	
+    }
+    
+    public CreditCard(Long playerID, String ccName, String ccNumber, int securityCode, String expDate) {
+    	setPlayerID(playerID);
+    	setCcName(ccName);
+    	setCcNumber(ccNumber);
+    	setSecurityCode(securityCode);
+    	setExpDate(expDate);
+    }
 
     public Long getId()
     {
