@@ -40,7 +40,7 @@ public class TestingUtil
 
     // This query retrieves all player IDs in the result set
     // e.g. "select id from player"
-    static String selectPlayerIDs = "To Be Added By Student";
+    static String selectPlayerIDs = "select id from player";
 
     /**
      * Return N current Player IDs for testing purposes.
@@ -76,7 +76,7 @@ public class TestingUtil
 
     // This query retrieves all game IDs in the result set
     // e.g. "select id from game"
-    static String selectGameIDs = "To Be Added By Student";
+    static String selectGameIDs = "select id from game";
 
     /**
      * Return N current Game IDs for testing purposes.
@@ -103,7 +103,7 @@ public class TestingUtil
 
     // This query will return the distinct game IDs being played by the given player ID. 
     // e.g. "select distinct game_id from games_played where player_id = ?"
-    static String selectDistinctPlayedGameIDs = "To Be Added By Student";
+    static String selectDistinctPlayedGameIDs = "select distinct game_id from games_played where player_id_gp = ?";
     
     static public List<Long> retrieveGamesPlayedForPlayer(DataSource ds, Long playerID) throws Exception
     {
@@ -128,7 +128,7 @@ public class TestingUtil
 
     // This query will return the distinct game IDs owned by the given player ID. 
     // e.g. "select distinct game_id from games_owned where player_id = ?"
-    static String selectDistinctOwnedGameIDs = "To Be Added By Student";
+    static String selectDistinctOwnedGameIDs = "select distinct game_id from games_owned where player_id_go = ?";
     
     static public List<Long> retrieveGamesOwnedForPlayer(DataSource ds, Long playerID) throws Exception
     {
