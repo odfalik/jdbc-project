@@ -10,11 +10,16 @@
  */
 package cs4347.jdbcGame.services.impl;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
 import javax.sql.DataSource;
 
+import cs4347.jdbcGame.dao.GamesOwnedDAO;
+import cs4347.jdbcGame.dao.GamesPlayedDAO;
+import cs4347.jdbcGame.dao.impl.GamesOwnedDAOImpl;
+import cs4347.jdbcGame.dao.impl.GamesPlayedDAOImpl;
 import cs4347.jdbcGame.entity.GamesPlayed;
 import cs4347.jdbcGame.services.GamesPlayedService;
 import cs4347.jdbcGame.util.DAOException;
@@ -22,58 +27,113 @@ import cs4347.jdbcGame.util.DAOException;
 public class GamesPlayedServiceImpl implements GamesPlayedService
 {
     private DataSource dataSource;
-
+    private GamesPlayedDAO gamesPlayedDAO;
+    
     public GamesPlayedServiceImpl(DataSource dataSource)
     {
         this.dataSource = dataSource;
+        this.gamesPlayedDAO = new GamesPlayedDAOImpl();
     }
 
     @Override
     public GamesPlayed create(GamesPlayed gamesPlayed) throws DAOException, SQLException
     {
-        return null;
+    	Connection connection = dataSource.getConnection();
+        try {
+            return gamesPlayedDAO.create(connection, gamesPlayed);
+        }
+        finally {
+            connection.close();
+        }
+        //return null;
     }
 
     @Override
     public GamesPlayed retrieveByID(long gamePlayedID) throws DAOException, SQLException
     {
-        return null;
+    	Connection connection = dataSource.getConnection();
+        try {
+            return gamesPlayedDAO.retrieveID(connection, gamePlayedID);
+        }
+        finally {
+            connection.close();
+        }
+        //return null;
     }
 
     @Override
     public List<GamesPlayed> retrieveByPlayerGameID(long playerID, long gameID) throws DAOException, SQLException
     {
-        return null;
+    	Connection connection = dataSource.getConnection();
+        try {
+            return gamesPlayedDAO.retrieveByPlayerGameID(connection, playerID, gameID);
+        }
+        finally {
+            connection.close();
+        }
+        //return null;
     }
 
     @Override
     public List<GamesPlayed> retrieveByGame(long gameID) throws DAOException, SQLException
     {
-        return null;
+    	Connection connection = dataSource.getConnection();
+        try {
+            return gamesPlayedDAO.retrieveByGame(connection, gameID);
+        }
+        finally {
+            connection.close();
+        }
+        //return null;
     }
 
     @Override
     public List<GamesPlayed> retrieveByPlayer(long playerID) throws DAOException, SQLException
     {
-        return null;
+    	Connection connection = dataSource.getConnection();
+        try {
+            return gamesPlayedDAO.retrieveByPlayer(connection, playerID);
+        }
+        finally {
+            connection.close();
+        }
+        //return null;
     }
 
     @Override
     public int update(GamesPlayed gamesPlayed) throws DAOException, SQLException
     {
-        return 0;
+    	Connection connection = dataSource.getConnection();
+        try {
+            return gamesPlayedDAO.update(connection, gamesPlayed);
+        }
+        finally {
+            connection.close();
+        }
     }
 
     @Override
     public int delete(long gamePlayedID) throws DAOException, SQLException
     {
-        return 0;
+    	Connection connection = dataSource.getConnection();
+        try {
+            return gamesPlayedDAO.delete(connection, gamePlayedID);
+        }
+        finally {
+            connection.close();
+        }
     }
 
     @Override
     public int count() throws DAOException, SQLException
     {
-        return 0;
+    	Connection connection = dataSource.getConnection();
+        try {
+            return gamesPlayedDAO.count(connection);
+        }
+        finally {
+            connection.close();
+        }
     }
 
 }
