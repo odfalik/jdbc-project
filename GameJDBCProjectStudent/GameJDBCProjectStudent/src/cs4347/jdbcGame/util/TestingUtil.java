@@ -34,8 +34,8 @@ public class TestingUtil
      */
     static public Long getPlayerID(DataSource ds) throws Exception
     {
-        List<Long> ids = getPlayerIDs(ds, 200);
-        return ids.get(193);
+        List<Long> ids = getPlayerIDs(ds, 1);
+        return ids.get(0);
     }
 
     // This query retrieves all player IDs in the result set
@@ -103,7 +103,7 @@ public class TestingUtil
 
     // This query will return the distinct game IDs being played by the given player ID. 
     // e.g. "select distinct game_id from games_played where player_id = ?"
-    static String selectDistinctPlayedGameIDs = "select distinct game_id from gamesPlayed where player_id_gp = ?";
+    static String selectDistinctPlayedGameIDs = "select distinct game_id_gp from gamesPlayed where player_id_gp = ?";
     
     static public List<Long> retrieveGamesPlayedForPlayer(DataSource ds, Long playerID) throws Exception
     {
