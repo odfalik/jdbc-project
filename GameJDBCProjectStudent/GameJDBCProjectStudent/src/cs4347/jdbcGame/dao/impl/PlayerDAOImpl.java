@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import cs4347.jdbcGame.dao.CreditCardDAO;
 import cs4347.jdbcGame.dao.PlayerDAO;
 import cs4347.jdbcGame.entity.CreditCard;
 import cs4347.jdbcGame.entity.Game;
@@ -62,7 +63,7 @@ public class PlayerDAOImpl implements PlayerDAO
 
     final static String selectSQL = "select p.id as pid, p.first_name, p.last_name, p.join_date, p.email, "
 					    		  + "c.id as cid, c.cc_name, c.cc_number, c.security_code, c.exp_date "
-					    		  + "from player as p inner join creditcard as c where player_id_cc = p.id && p.id = ?";
+					    		  + "from player as p left join creditcard as c on player_id_cc = p.id where p.id = ?";
     
     @Override
     public Player retrieve(Connection connection, Long playerID) throws SQLException, DAOException
@@ -76,9 +77,13 @@ public class PlayerDAOImpl implements PlayerDAO
             ps = connection.prepareStatement(selectSQL);
             ps.setLong(1, playerID);
             ResultSet rs = ps.executeQuery();
-
-            Player player = extractFromRSWithCC(rs);
-            return player;
+            if(rs.next())
+            {
+            	Player player = extractFromRSWithCC(rs);
+                return player;
+            }
+            return null;
+            
         }
         finally {
             if (ps != null && !ps.isClosed()) {
@@ -86,17 +91,74 @@ public class PlayerDAOImpl implements PlayerDAO
             }
         }
     }
-
+    
+    final static String updateSQL = "UPDATE player SET first_name = ?, last_name = ?, join_date = ?, email = ? WHERE id = ?;";
+    
     @Override
     public int update(Connection connection, Player player) throws SQLException, DAOException
     {
-        return 0;
+    	CreditCardDAO ccDAO = new CreditCardDAOImpl();
+    	
+    	Long id = player.getId();
+        if (id == null) {
+            throw new DAOException("Trying to update player with NULL ID");
+        }
+
+        int rows;
+
+        PreparedStatement ps = null;
+        try {
+            ps = connection.prepareStatement(updateSQL);
+            // ps.setLong(1, player.getId());
+            ps.setString(1, player.getFirstName());
+            ps.setString(2, player.getLastName());
+            ps.setDate(3, new java.sql.Date(player.getJoinDate().getTime()));
+            ps.setString(4, player.getEmail());
+            ps.setLong(5, player.getId());
+            
+            
+            
+            rows = ps.executeUpdate();
+        }
+        finally {
+            if (ps != null && !ps.isClosed()) {
+                ps.close();
+            }
+        }
+        
+        for(CreditCard cc: player.getCreditCards())
+        {
+        	if (cc.getId() != null)
+        		ccDAO.update(connection, cc);
+        	else
+        		ccDAO.create(connection, cc, player.getId());
+        }
+        
+        return rows;
     }
 
+    final static String deleteSQL = "delete from player where id = ?;";
+    
     @Override
     public int delete(Connection connection, Long playerID) throws SQLException, DAOException
     {
-        return 0;
+    	if (playerID == null) {
+            throw new DAOException("Trying to delete Player with NULL ID");
+        }
+    	
+    	PreparedStatement ps = null;
+        try {
+            ps = connection.prepareStatement(deleteSQL);
+            ps.setLong(1, playerID);
+            int rows = ps.executeUpdate();
+            return rows;
+        }
+        finally {
+            if (ps != null && !ps.isClosed()) {
+                ps.close();
+            }
+        }
+    	//return 0;
     }
 
     
@@ -122,11 +184,34 @@ public class PlayerDAOImpl implements PlayerDAO
         }
     }
 
+    final static String selectJoinDateSQL = "select p.id as pid, p.first_name, p.last_name, p.join_date, p.email, "
+  		  + "c.id as cid, c.cc_name, c.cc_number, c.security_code, c.exp_date "
+  		  + "from player as p left join creditcard as c on player_id_cc = p.id where p.join_date between ? and ?";    
+
     @Override
     public List<Player> retrieveByJoinDate(Connection connection, Date start, Date end)
             throws SQLException, DAOException
     {
-        return null;
+    	List<Player> result = new ArrayList<Player>();
+    	
+        PreparedStatement ps = null;
+        try {
+            ps = connection.prepareStatement(selectJoinDateSQL);
+            ps.setDate(1, new java.sql.Date(start.getTime()));
+            ps.setDate(2, new java.sql.Date(end.getTime()));
+            ResultSet rs = ps.executeQuery();
+            while(rs.next())
+            {
+            	result.add(extractFromRSWithCC(rs));
+            }
+
+            return result;
+        }
+        finally {
+            if (ps != null && !ps.isClosed()) {
+                ps.close();
+            }
+        }
     }
     
     private Player extractFromRSWithCC(ResultSet rs) throws SQLException
@@ -141,6 +226,7 @@ public class PlayerDAOImpl implements PlayerDAO
         List<CreditCard> creditCards = new ArrayList<CreditCard>();
         do {
         	creditCards.add(new CreditCard(
+        		rs.getLong("cid"),
         		rs.getLong("pid"),
         		rs.getString("cc_name"),
         		rs.getString("cc_number"),

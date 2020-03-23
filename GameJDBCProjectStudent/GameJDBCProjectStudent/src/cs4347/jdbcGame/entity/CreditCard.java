@@ -23,7 +23,8 @@ public class CreditCard
     	
     }
     
-    public CreditCard(Long playerID, String ccName, String ccNumber, int securityCode, String expDate) {
+    public CreditCard(Long cid, Long playerID, String ccName, String ccNumber, int securityCode, String expDate) {
+    	setId(cid);
     	setPlayerID(playerID);
     	setCcName(ccName);
     	setCcNumber(ccNumber);

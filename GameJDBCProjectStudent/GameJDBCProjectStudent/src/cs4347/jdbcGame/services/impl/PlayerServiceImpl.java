@@ -29,10 +29,12 @@ import cs4347.jdbcGame.util.DAOException;
 public class PlayerServiceImpl implements PlayerService
 {
     private DataSource dataSource;
+    private PlayerDAO playerDAO;
 
     public PlayerServiceImpl(DataSource dataSource)
     {
         this.dataSource = dataSource;
+        this.playerDAO = new PlayerDAOImpl();
     }
 
     @Override
@@ -73,31 +75,61 @@ public class PlayerServiceImpl implements PlayerService
     @Override
     public Player retrieve(Long playerID) throws DAOException, SQLException
     {
-        return null;
+    	Connection connection = dataSource.getConnection();
+        try {
+            return playerDAO.retrieve(connection, playerID);
+        }
+        finally {
+            connection.close();
+        }
     }
 
     @Override
     public int update(Player player) throws DAOException, SQLException
     {
-        return 0;
+    	Connection connection = dataSource.getConnection();
+        try {
+            return playerDAO.update(connection, player);
+        }
+        finally {
+            connection.close();
+        }
     }
 
     @Override
     public int delete(Long playerID) throws DAOException, SQLException
     {
-        return 0;
+    	Connection connection = dataSource.getConnection();
+        try {
+            return playerDAO.delete(connection, playerID);
+        }
+        finally {
+            connection.close();
+        }
     }
 
     @Override
     public int count() throws DAOException, SQLException
     {
-        return 0;
+    	Connection connection = dataSource.getConnection();
+        try {
+            return playerDAO.count(connection);
+        }
+        finally {
+            connection.close();
+        }
     }
 
     @Override
     public List<Player> retrieveByJoinDate(Date start, Date end) throws DAOException, SQLException
     {
-        return null;
+    	Connection connection = dataSource.getConnection();
+        try {
+            return playerDAO.retrieveByJoinDate(connection, start, end);
+        }
+        finally {
+            connection.close();
+        }
     }
 
     /**
